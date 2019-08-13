@@ -4,18 +4,19 @@ const fs = require("fs");
 const ip = require("ip");
 
 function timeOutTest() {
-    // Will resolve after 10000ms
+    // Will resolve after 5000ms
     let id;
     let promiseA = new Promise((resolve, reject) => {
     id = setTimeout(() => {
       resolve('Promise A Wins!')
-  }, 10000)
+  }, 2000)
     })
 
     // Will resolve after 200ms
     let promiseB = new Promise((resolve, reject) => {
     id1 = setTimeout(() => {
-      resolve('Promise B Wins!')
+        var x = 5 + 7;
+        resolve(x);
   }, 200)
     })
 
@@ -24,11 +25,9 @@ function timeOutTest() {
     promiseA,
     promiseB
   ]).then((result) => {
-    clearTimeout(id, id1)
+    clearTimeout(id);
+    clearTimeout(id1)
 
-    /**
-     * ... we also need to pass the result back
-     */
     return result;
   })
 }
