@@ -11,14 +11,18 @@ function timeOutTest() {
   }, 2000)
     })
 
-    let proxyPicked = new Promise((resolve, reject) => {
-    timeoutArray = [100, 100000]
-    timeoutLength = timeoutArray[Math.floor(Math.random() * Math.floor(2))];
-    console.log(timeoutLength);
-    id1 = setTimeout(() => {
-        var x = 5 + 7;
-        resolve(x);
-  }, timeoutLength)
+    let proxyPicked = new Promise(async (resolve, reject) => {
+        const proxyList = fs.readFileSync('proxyList.txt').toString().split("\n");
+        proxyList.pop();
+        const randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
+        console.log("Random Proxy: " + randomProxy);
+        const htmlResult = await request({
+            url : "https://www.landwatch.com",
+            method : "GET",
+            proxy : "http://" + randomProxy,
+        });
+        const $ = await cheerio.load(htmlResult);
+        resolve(randomProxy);
     })
 
     // Let's race our promises
@@ -27,7 +31,6 @@ function timeOutTest() {
     proxyPicked
   ]).then((result) => {
     clearTimeout(id);
-    clearTimeout(id1)
 
     return result;
   })
