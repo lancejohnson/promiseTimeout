@@ -44,8 +44,13 @@ async function findProxy() {
     }
     else {
     console.log(message);
-    process.exit();
+    return message;
     }
 }
 
-findProxy();
+async function run() {
+    var proxy = await findProxy();
+    console.log('The proxy in the variable is: ' + proxy);
+}
+
+run();
