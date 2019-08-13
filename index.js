@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const fs = require("fs");
 const ip = require("ip");
 
-function timeOutTest() {
+function proxyAndTimeoutRace() {
     let id;
     let proxyTimeout = new Promise((resolve, reject) => {
     id = setTimeout(() => {
@@ -36,14 +36,16 @@ function timeOutTest() {
   })
 }
 
-async function runTimeout() {
-    var message = await timeOutTest();
+async function findProxy() {
+    var message = await proxyAndTimeoutRace();
     if (message == 'Failed') {
         console.log('Retrying...')
-        runTimeout();
+        findProxy();
     }
     else {
-    console.log(message);}
+    console.log(message);
+    process.exit();
+    }
 }
 
-runTimeout();
+findProxy();
