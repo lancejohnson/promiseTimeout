@@ -43,7 +43,7 @@ async function findProxy() {
         findProxy();
     }
     else {
-    console.log(message);
+    console.log('Working proxy found!: ' + message);
     return message;
     }
 }
