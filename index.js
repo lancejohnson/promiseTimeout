@@ -7,15 +7,18 @@ function timeOutTest() {
     let id;
     let promiseA = new Promise((resolve, reject) => {
     id = setTimeout(() => {
-      resolve(Math.floor(Math.random() * Math.floor(2)));
-  }, 20000)
+      resolve('Failed');
+  }, 2000)
     })
 
     let promiseB = new Promise((resolve, reject) => {
+    timeoutArray = [100, 100000]
+    timeoutLength = timeoutArray[Math.floor(Math.random() * Math.floor(2))];
+    console.log(timeoutLength);
     id1 = setTimeout(() => {
         var x = 5 + 7;
         resolve(x);
-  }, 2000)
+  }, timeoutLength)
     })
 
     // Let's race our promises
@@ -32,7 +35,7 @@ function timeOutTest() {
 
 async function runTimeout() {
     var message = await timeOutTest();
-    if (message == 1) {
+    if (message == 'Failed') {
         runTimeout();
     }
     console.log(message);
