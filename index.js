@@ -1,7 +1,5 @@
 const request = require("request-promise");
-const cheerio = require("cheerio");
 const fs = require("fs");
-const ip = require("ip");
 
 function proxyAndTimeoutRace() {
     let id;
@@ -21,7 +19,6 @@ function proxyAndTimeoutRace() {
             method : "GET",
             proxy : "http://" + randomProxy,
         });
-        const $ = await cheerio.load(htmlResult);
         resolve(randomProxy);
     })
 
@@ -31,7 +28,6 @@ function proxyAndTimeoutRace() {
     proxyPicked
   ]).then((result) => {
     clearTimeout(id);
-
     return result;
   })
 }
