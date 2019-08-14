@@ -22,7 +22,7 @@ function testRandomProxy(randomProxy) {
       })
   })
 }
-async function findProxyFromList(pathToProxyList) {
+async function findProxyFromList(pathToProxyList) { //Quest: I have a `Utilities` folder right now where I keep a list of proxies.  I figure I'll be referring to that for a LOT of different scrapers.  Should I turn it into a self-sufficient package instead and just import it so it runs soup-to-nuts?
   const proxyList = fs.readFileSync(pathToProxyList).toString().split("\n");
   proxyList.pop()
   let foundProxy = false;
@@ -41,6 +41,7 @@ async function findProxyFromList(pathToProxyList) {
         proxyList.splice(randomIndex, 1);
       })
     if (foundProxy) {
+        fs.writeFileSync(pathToProxyList, proxyList.join('\n')); //Quest: should I explain more why I'm doing this `proxyList.join('\n')`?  It's so I can write one proxy per line, which is the format it needs to be read in.
         return randomProxy //Quest: is there a better place to put this return statement?  I want to only return the value randomProxy if it's a working one, which is when foundProxy = true.
     }
   }
