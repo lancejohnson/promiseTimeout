@@ -2,16 +2,9 @@ const axios = require("axios");
 const fs = require("fs");
 const url = require("url");
 
-function findAvailableProxy(randomProxy) {
-  return new Promise((resolve, reject) => {
-    // Axios requires the host and port name options so I'm using Node's url library to
-    // parse the proxyList.txt. NOTE: I had to add http:// to the proxy servers in the text file. You
-    // could do that programmatically as well if you wanted.
+function testRandomProxy(randomProxy) {
+  return new Promise((resolve, reject) => { //Quest: 1) why doesn't this return an unresolved promise?  2) What happens to the rest of the program while it's waiting for the promise to resolve?  Does it pause until the promise has resolved?
     const proxyUrl = url.parse('http://' + randomProxy);
-    debugger;
-
-    console.log("Random Proxy: " + randomProxy);
-
     req = axios({
         url: "https://www.landwatch.com",
         method: "GET",
@@ -21,34 +14,38 @@ function findAvailableProxy(randomProxy) {
         },
         timeout: 1000, // Bad proxys will cause your request to hang
       })
-      .then((response) => {
-        // Here you can use Cheerio
+      .then((response) => { //As long as there's a response we can resolve the promise.
         resolve(randomProxy)
       })
-      .catch((err) => {
+      .catch((err) => { //Unworking proxies throw errors.  Whatever the error is, we want to reject that proxy.
         reject("Failed")
       })
   })
 }
-async function run() {
-  const proxyList = fs.readFileSync('proxyList.txt').toString().split("\n");
+async function findProxyFromList(pathToProxyList) {
+  const proxyList = fs.readFileSync(pathToProxyList).toString().split("\n");
   proxyList.pop()
   const randomProxyStr = proxyList[Math.floor(Math.random() * proxyList.length)];
-  debugger;
   let foundProxy = false;
 
   // I looped here to make testing easy. The code inside the loop will work for your case as well.
-  while (!foundProxy) {
+  while (!foundProxy) { //Quest: look up how while loops work.  Namely, when is it checking the condition?  It seems like it'll check each time it loops, and the value will only change when the promise from findAvailableProxy resolves.
     const randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
-    await findAvailableProxy(randomProxy)
+    await testRandomProxy(randomProxy)
       .then(() => {
-        console.log(`Working proxy found!: ${randomProxy}`);
         foundProxy = true;
+        console.log(randomProxy + ' works!')
       })
       .catch((e) => {
-        console.log(e)
+        console.log('Womp, womp: ' + randomProxy);
+        console.log(e);
       })
+    if (foundProxy) {
+        return randomProxy //Quest: is there a better place to put this return statement?  I want to only return the value randomProxy if it's a working one, which is when foundProxy = true.
+    }
   }
 }
 
-run();
+module.exports = {
+    findProxyFromList,
+}
