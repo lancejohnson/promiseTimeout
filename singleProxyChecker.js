@@ -25,12 +25,12 @@ function testRandomProxy(randomProxy) {
 async function findProxyFromList(pathToProxyList) {
   const proxyList = fs.readFileSync(pathToProxyList).toString().split("\n");
   proxyList.pop()
-  const randomProxyStr = proxyList[Math.floor(Math.random() * proxyList.length)];
   let foundProxy = false;
 
   // I looped here to make testing easy. The code inside the loop will work for your case as well.
   while (!foundProxy) { //Quest: look up how while loops work.  Namely, when is it checking the condition?  It seems like it'll check each time it loops, and the value will only change when the promise from findAvailableProxy resolves.
-    const randomProxy = proxyList[Math.floor(Math.random() * proxyList.length)];
+    const randomIndex = Math.floor(Math.random() * proxyList.length)
+    const randomProxy = proxyList[randomIndex];
     await testRandomProxy(randomProxy)
       .then(() => {
         foundProxy = true;
@@ -38,7 +38,7 @@ async function findProxyFromList(pathToProxyList) {
       })
       .catch((e) => {
         console.log('Womp, womp: ' + randomProxy);
-        console.log(e);
+        proxyList.splice(randomIndex, 1);
       })
     if (foundProxy) {
         return randomProxy //Quest: is there a better place to put this return statement?  I want to only return the value randomProxy if it's a working one, which is when foundProxy = true.
